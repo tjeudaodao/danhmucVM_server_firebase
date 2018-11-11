@@ -59,7 +59,6 @@ namespace Danhmuc27lvl
         string duongdanfilemoi = Application.StartupPath + @"\filedanhmuc\";
         string duongdanchuaanh = Application.StartupPath + @"\luuanh\";
         static string ngaychonbandau = null;
-        static int sodongchon = 0;
         static string thoigiancapnhat = null;
         static bool phathaykhongphat = true;
         List<string> thongtinmailmoi= new List<string>();
@@ -71,7 +70,6 @@ namespace Danhmuc27lvl
         {
             InitializeComponent();
 
-            loadkhikhoidong();
 
             chaynen = new Thread(luongchaynen);
             chaynen.IsBackground = true;
@@ -91,18 +89,18 @@ namespace Danhmuc27lvl
             filemoi.Start();
             
         }
-        public async void loadkhikhoidong()
+        public void loadkhikhoidong()
         {
-            string h = await xulyFireBase.layngayGannhat();
-            xulyFireBase.taobang(h, datag1);
+            var con = ketnoisqlite.khoitao();
+            ngaychonbandau = con.layngayganhat();
+            datag1.DataSource = con.laythongtinkhichonngay(ngaychonbandau);
             lbtongma.Text = datag1.Rows.Count.ToString();
-           
         }
         void luongchaynen()
         {
             while (true)
             {
-                Thread.Sleep(1000);
+                Thread.Sleep(500);
                 newmail = new Thread(hamloadmailmoi);
                 newmail.IsBackground = true;
                 newmail.Start();
@@ -130,7 +128,7 @@ namespace Danhmuc27lvl
         {
             while (true)
             {
-                Thread.Sleep(1000);
+                Thread.Sleep(3000);
                 if (filedmmoi != null)
                 {
                     pbfiledanhmucmoi.Invoke(new MethodInvoker(delegate ()
@@ -153,7 +151,7 @@ namespace Danhmuc27lvl
         {
             while (true)
             {
-                Thread.Sleep(1500);
+                Thread.Sleep(2500);
                 if(thongtinmailmoi != null)
                 {
                     foreach (string tt in thongtinmailmoi)
@@ -232,13 +230,14 @@ namespace Danhmuc27lvl
             
             
         }
-        void hamcapnhat() // chay thu 2m*zv,
+        void hamcapnhat() // chay thu 2
         {
             newmail.Join(); // ham cap nhat se doi ham newmail xu ly xong moi chay
             try
             {
                 var xulyoutlook = layfileoutlook.Instance();
                 var ham = hamtao.Khoitao();
+                xulyoutlook.xuly();
                 filedmmoi = xulyoutlook.luufilemoi();
 
                 ham.luudanhmuchangmoi();
@@ -285,7 +284,7 @@ namespace Danhmuc27lvl
             else cofiledmmoi = false;
         }
 
-        public async void chenma() // chay thu 4
+        public void chenma() // chay thu 4
         {
             xulyanh.Join(); //ham chenma(thread chenmahang) se doi cho ham xulyanh chay xong moi chay
             var ham = hamtao.Khoitao();
@@ -300,15 +299,10 @@ namespace Danhmuc27lvl
             {
                 pbtrangthaicapnhat.Image = Properties.Resources.ok;
             }));
-            ngaychonbandau = await xulyFireBase.layngayGannhat();
-            datag1.Invoke(new MethodInvoker(delegate ()
-            {
-                xulyFireBase.taobang(ngaychonbandau,datag1);
                 lbtongma.Invoke(new MethodInvoker(delegate ()
                 {
                     lbtongma.Text = datag1.Rows.Count.ToString();
                 }));
-            }));
             if (cofiledmmoi)
             {
                 this.Invoke(new Action(delegate ()
@@ -330,6 +324,47 @@ namespace Danhmuc27lvl
                 }
 
             }));
+            try
+            {
+                var con = ketnoi.Instance();
+                var consqlite = ketnoisqlite.khoitao();
+                string ngaydata = con.layngayData();
+                string ngaydata2 = consqlite.layngayData();
+                if (ngaydata2 != ngaydata)
+                {
+                    try
+                    {
+                        try
+                        {
+                            ftp ftpClient = new ftp(@"ftp://27.72.29.28/", "hts", "hoanglaota");
+
+                            ftpClient.download("app/luutru/databarcode.db", Application.StartupPath + @"\databarcode.db");
+                        }
+                        catch (Exception)
+                        {
+                            return;
+                        }
+
+
+                        this.Invoke(new Action(delegate ()
+                        {
+                            NotificationHts("Vừa Cập Nhật bảng barcode xong\nOk, triển chiêu.");
+                        }));
+                        consqlite.capnhatngayData(ngaydata);
+                    }
+                    catch (Exception)
+                    {
+                        consqlite.capnhatngayData("-");
+                        throw;
+                    }
+
+                }
+            }
+            catch (Exception)
+            {
+                return;
+            }
+            
         }
         void hamtudongloadanh()
         {
@@ -355,6 +390,7 @@ namespace Danhmuc27lvl
             }
             
         }
+
         /// <summary>
         /// 
         /// cac ham phuc vu
@@ -363,7 +399,12 @@ namespace Danhmuc27lvl
         /// <param name="e"></param>
         private void Formchinh_Load(object sender, EventArgs e)
         {
-            
+            ketnoisqlite.SettenaCottrunghang("trunghang");
+            xulyFireBase.setTenCuaHang = "cnf_27lvl";
+
+            loadkhikhoidong();
+            xulyFireBase.langngheLoadbang(datag1);
+            xulyFireBase.langngheTrungHang(datag1);
         }
         void laythongtinvaolabel(string mahang)
         {
@@ -377,7 +418,7 @@ namespace Danhmuc27lvl
                 phatchuaduocban.Play();
                 return;
             }
-            var conlite = ketnoi.Instance();
+            var conlite = ketnoisqlite.khoitao();
             var ham = hamtao.Khoitao();
             List<laythongtin> laytt = new List<laythongtin>();
             laytt = conlite.loclaythongtin1ma(mahang);
@@ -436,23 +477,32 @@ namespace Danhmuc27lvl
                 lbmahang.Text = "Mã hàng";
             }
         }
-        
+        void nhaydenhangvuachon(int sohang)
+        {
+            datag1.Rows[sohang].Selected = true;
+            datag1.FirstDisplayedScrollingRowIndex = sohang;
+            datag1.Focus();
+        }
         void updatetrunghangthanhdatrung()
         {
             try
             {
 
-                var con = ketnoi.Instance();
-
+                var con = ketnoisqlite.khoitao();
+                con.updateClick("1");
+                var ham = hamtao.Khoitao();
                 if (datag1.SelectedRows.Count > 0)
                 {
+                    int sohang = datag1.SelectedRows[0].Index;
                     string matong = null;
+                    string ngay = null;
                     foreach (DataGridViewRow row in datag1.SelectedRows)
                     {
+                        ngay = ham.chuyendoingayvedangso(row.Cells[4].Value.ToString());
                         matong = row.Cells[0].Value.ToString();
                         con.updatedatrunghangthanhdatrung(matong);
+                        xulyFireBase.updateTrunghangFB(ngay, matong, "Đã Trưng Bán");
                     }
-                    sodongchon = datag1.SelectedRows.Count;
                     if (ngaychonbandau == null)
                     {
                         ngaychonbandau = con.layngayganhat();
@@ -461,9 +511,10 @@ namespace Danhmuc27lvl
                     {
                         datag1.DataSource = con.laydanhsachCHUATRUNG();
                     }
-                    else datag1.DataSource = con.laythongtinkhichonngay("ngaydangso",ngaychonbandau);
+                    else datag1.DataSource = con.laythongtinkhichonngay(ngaychonbandau);
+                    nhaydenhangvuachon(sohang);
                     updatesoluongtrenbang();
-                    NotificationHts("Vừa cập nhật : " + sodongchon.ToString() + " mã hàng");
+                    con.updateClick("0");
                 }
             }
             catch (Exception ex)
@@ -478,18 +529,23 @@ namespace Danhmuc27lvl
         {
             try
             {
-                var con = ketnoi.Instance();
+                var con = ketnoisqlite.khoitao();
+
+                con.updateClick("1");
                 if (datag1.SelectedRows.Count > 0)
                 {
+                    int sohang = datag1.SelectedRows[0].Index;
+                    var ham = hamtao.Khoitao();
                     string matong = null;
+                    string ngay = null;
                     foreach (DataGridViewRow row in datag1.SelectedRows)
                     {
+                        ngay = ham.chuyendoingayvedangso(row.Cells[4].Value.ToString());
                         matong = row.Cells[0].Value.ToString();
                         con.updatetrunghangthanhchuatrung(matong);
 
+                        xulyFireBase.updateTrunghangFB(ngay, matong, "Chưa trưng bán");
                     }
-                    sodongchon = datag1.SelectedRows.Count;
-                    NotificationHts("Vừa cập nhật : " + sodongchon.ToString() + " mã hàng");
                     if (ngaychonbandau == null)
                     {
                         ngaychonbandau = con.layngayganhat();
@@ -498,8 +554,11 @@ namespace Danhmuc27lvl
                     {
                         datag1.DataSource = con.laydanhsachCHUATRUNG();
                     }
-                    else datag1.DataSource = con.laythongtinkhichonngay("ngaydangso", ngaychonbandau);
+                    else datag1.DataSource = con.laythongtinkhichonngay(ngaychonbandau);
+                    nhaydenhangvuachon(sohang);
                     updatesoluongtrenbang();
+
+                    con.updateClick("0");
                 }
             }
             catch (Exception ex)
@@ -544,8 +603,8 @@ namespace Danhmuc27lvl
                 {
                     if (!string.IsNullOrEmpty(txtbarcode.Text))
                     {
-                        var consql = ketnoi.Instance();
-                        string masp = consql.laymasp(txtbarcode.Text);
+                        var consqlitebarcode = ketnoibarcode.Khoitao();
+                        string masp = consqlitebarcode.laymasp(txtbarcode.Text);
                         laythongtinvaolabel(masp);
 
                         //lbmahang.Text = masp;
@@ -575,7 +634,7 @@ namespace Danhmuc27lvl
         {
             try
             {
-                var consqlite = ketnoi.Instance();
+                var consqlite = ketnoisqlite.khoitao();
                 datag1.DataSource = consqlite.loctheotenmatong(txtmatong.Text);
                 string mau = @"\d{1}\w{2}\d{2}[SWAC]\d{3}";
                 if (Regex.IsMatch(txtmatong.Text, mau))
@@ -600,11 +659,11 @@ namespace Danhmuc27lvl
         {
             try
             {
+                var con = ketnoisqlite.khoitao();
                 var month = sender as MonthCalendar;
                 DateTime ngaychon = month.SelectionStart;
                 ngaychonbandau = month.SelectionStart.ToString("yyyyMMdd", CultureInfo.InvariantCulture);
-                Console.WriteLine(ngaychonbandau);
-                xulyFireBase.taobang(ngaychonbandau, datag1);
+                datag1.DataSource = con.laythongtinkhichonngay(ngaychonbandau);
                 updatesoluongtrenbang();
                 dateTimePicker1.Value = ngaychon;
                 dateTimePicker2.Value = ngaychon;
@@ -621,7 +680,7 @@ namespace Danhmuc27lvl
         {
             try
             {
-                var con = ketnoi.Instance();
+                var con = ketnoisqlite.khoitao();
                 if (con.Kiemtra("matong", "hangduocban", lbmahang.Text) == null && lbmahang.Text != "Mã hàng")
                 {
                     DialogResult hoi = MessageBox.Show("Thêm mã " + lbmahang.Text + " vào danh sách được bán", "Thông báo", MessageBoxButtons.YesNo);
@@ -712,7 +771,7 @@ namespace Danhmuc27lvl
                 var ham = hamtao.Khoitao();
                 ngaybatdau = ham.chuyendoingayvedangso(ngaybatdau);
                 ngayketthuc = ham.chuyendoingayvedangso(ngayketthuc);
-                var con = ketnoi.Instance();
+                var con = ketnoisqlite.khoitao();
                 DataTable dt = new DataTable();
                 dt = con.laythongtinkhoangngay(ngaybatdau, ngayketthuc);
                 string tongsoma = con.tongmatrongkhoangngaychon(ngaybatdau, ngayketthuc);
@@ -825,7 +884,7 @@ namespace Danhmuc27lvl
 
         private void nuthts_trung_CheckedChanged(object sender, EventArgs e)
         {
-            var con = ketnoi.Instance();
+            var con = ketnoisqlite.khoitao();
             if (nuthts_trung.Checked)
             {
                 datag1.DataSource = con.laydanhsachCHUATRUNG();
@@ -834,7 +893,7 @@ namespace Danhmuc27lvl
             else
             {
                 ngaychonbandau = con.layngayganhat();
-                datag1.DataSource = con.laythongtinngayganhat(ngaychonbandau);
+                datag1.DataSource = con.laythongtinkhichonngay(ngaychonbandau);
                 updatesoluongtrenbang();
             }
         }

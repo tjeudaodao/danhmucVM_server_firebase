@@ -20,6 +20,7 @@ using System.Drawing;
 using FireSharp.Config;
 using FireSharp.Interfaces;
 using FireSharp.Response;
+using Firebase.Storage;
 
 namespace Danhmuc27lvl
 {
@@ -71,7 +72,12 @@ namespace Danhmuc27lvl
             }
             
         }
-
+        public static string chuyenngayvedangso2(string ngaydang)
+        {
+            string patt = @"(\d{2})/(\d{2})/(\d{4})";
+            var m = Regex.Match(ngaydang, patt);
+            return m.Groups[3].ToString() + m.Groups[2].ToString() + m.Groups[1].ToString();
+        }
         public void luudanhmuchangmoi()
         {
 
@@ -130,56 +136,58 @@ namespace Danhmuc27lvl
                 ngayduocban = ngayduocban,
                 taikhoancnf = new taikhoan
                 {
-                    cnf_27lvl = "-",
-                    cnf_121cb = "-",
-                    cnf_171tp = "-",
-                    cnf_181gv = "-",
-                    cnf_25ldh = "-",
-                    cnf_335cg = "-",
-                    cnf_554nvc = "-",
-                    cnf_aeon = "-",
-                    cnf_bigc = "-",
-                    cnf_royal = "-",
-                    cnf_timecity = "-"
+                    cnf_27lvl = new trunghang { trangthaitrung = " "},
+                    cnf_121cb = new trunghang { trangthaitrung = " " },
+                    cnf_171tp = new trunghang { trangthaitrung = " " },
+                    cnf_181gv = new trunghang { trangthaitrung = " " },
+                    cnf_25ldh = new trunghang { trangthaitrung = " " },
+                    cnf_335cg = new trunghang { trangthaitrung = " " },
+                    cnf_554nvc = new trunghang { trangthaitrung = " " },
+                    cnf_aeon = new trunghang { trangthaitrung = " " },
+                    cnf_bigc = new trunghang { trangthaitrung = " " },
+                    cnf_royal = new trunghang { trangthaitrung = " " },
+                    cnf_timecity = new trunghang { trangthaitrung = " " },
+                    cnf_185thd = new trunghang { trangthaitrung = " " }
                 }
             };
             SetResponse ketnoi = await clientFirebase.SetAsync("ngayduocban/" + ngaydangso + "/" + matong, dulieuh);
         }
-        public async void capnhatngaymoinhatFB (string ngay)
+        public async void capnhatngaymoinhatFB ()
         {
-            FirebaseResponse thongso = await clientFirebase.UpdateAsync("thongso/ngaymoinhat", new { tenngay = ngay });
+            var con = ketnoisqlite.khoitao();
+            string ngaymoinhat = con.layngayganhat();
+            FirebaseResponse thongso = await clientFirebase.UpdateAsync("thongso/ngaymoinhat", new { tenngay = ngaymoinhat });
         }
         public void xulymahang()
         {
             var con = ketnoisqlite.khoitao();
-            //var conmysql = ketnoi.Instance();
             clientFirebase = new FireSharp.FirebaseClient(configFirebase);
             
             try
             {
                 string ngay = null;
-                foreach (laythongtin mahang in luuthongtin)
+                if (luuthongtin != null)
                 {
-                    //if (conmysql.Kiemtra("matong", "hangduocban", mahang.Maduocban) == null)
-                    //{
-                    //    try
-                    //    {
-                    //        conmysql.Chenvaobanghangduocban(mahang.Maduocban, mahang.Ngayduocban, mahang.Ghichu, mahang.Ngaydangso, mahang.Motamaban, mahang.Chudemaban);
+                    foreach (laythongtin mahang in luuthongtin)
+                    {
+                        try
+                        {
+                            con.Chenvaobanghangduocban(mahang.Maduocban, mahang.Ngayduocban, mahang.Ghichu, mahang.Ngaydangso, mahang.Motamaban, mahang.Chudemaban);
 
-                    //    }
-                    //    catch (Exception)
-                    //    {
+                        }
+                        catch (Exception)
+                        {
 
-                    //        continue;
-                    //    }
-                    //}
-                    ngay = mahang.Ngaydangso;
-                    capnhatFireBase(mahang.Ngaydangso, mahang.Maduocban, mahang.Motamaban, mahang.Chudemaban, mahang.Ghichu, mahang.Ngayduocban);
+                            continue;
+                        }
+                        ngay = mahang.Ngaydangso;
+                        capnhatFireBase(mahang.Ngaydangso, mahang.Maduocban, mahang.Motamaban, mahang.Chudemaban, mahang.Ghichu, mahang.Ngayduocban);
+                    }
                 }
+                
                 if (ngay != null)
                 {
-
-                    capnhatngaymoinhatFB(ngay);
+                    capnhatngaymoinhatFB();
                 }
                 luuthongtin.Clear();
             }
@@ -195,7 +203,7 @@ namespace Danhmuc27lvl
             }
             danhsachfilechuaxuly.Clear();
         }
-        public void copyanhvathongtin(string filecanlay)
+        public async void copyanhvathongtin(string filecanlay)
         {
 
             try
@@ -251,10 +259,22 @@ namespace Danhmuc27lvl
                         for (int i = 1; i < sheet.Pictures.Count; i++)
                         {
                             Spire.Xls.ExcelPicture anh = sheet.Pictures[i];
-                            tenanhH = sheet.Range[anh.TopRow, 5].Value2.ToString();
+                            if (sheet.Range[anh.TopRow, 5].HasFormula)
+                            {
+                                tenanhH = sheet.Range[anh.TopRow, 5].FormulaStringValue;
+                            }
+                            else tenanhH = sheet.Range[anh.TopRow, 5].Value2.ToString();
                             if (!File.Exists(duongdanluuanh + @"\" + tenanhH + ".png"))
                             {
                                 anh.Picture.Save(duongdanluuanh + @"\" + tenanhH + ".png", ImageFormat.Png);
+                                var stream = File.Open(duongdanluuanh + @"\" + tenanhH + ".png", FileMode.Open);
+                                var task = new FirebaseStorage("danhmucvm-cnf.appspot.com")
+                                    .Child("anhsanpham_cnf")
+                                    .Child(tenanhH + ".png")
+                                    .PutAsync(stream);
+                                task.Progress.ProgressChanged += (s, ex) => Console.WriteLine($"Progress: {ex.Percentage} %");
+                                
+                                var downloadUrl = await task;
                             }
                         }
                     }

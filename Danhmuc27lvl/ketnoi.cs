@@ -325,5 +325,21 @@ namespace Danhmuc27lvl
         }
 
         #endregion
+
+        public string layngayData()
+        {
+            string sql = "SELECT ngaydata FROM ngaycapnhat";
+            string h = null;
+
+            Open();
+            MySqlCommand cmd = new MySqlCommand(sql, connection);
+            MySqlDataReader dtr = cmd.ExecuteReader();
+            while (dtr.Read())
+            {
+                h = dtr[0].ToString();
+            }
+            Close();
+            return h;
+        }
     }
 }

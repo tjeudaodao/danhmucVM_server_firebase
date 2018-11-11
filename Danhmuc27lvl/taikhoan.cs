@@ -8,21 +8,22 @@ namespace Danhmuc27lvl
 {
     class taikhoan
     {
-        public string cnf_27lvl { get; set; }
-        public string cnf_121cb { get; set; }
-        public string cnf_171tp { get; set; }
-        public string cnf_181gv { get; set; }
-        public string cnf_25ldh { get; set; }
-        public string cnf_335cg { get; set; }
-        public string cnf_554nvc { get; set; }
-        public string cnf_aeon { get; set; }
-        public string cnf_royal { get; set; }
-        public string cnf_timecity { get; set; }
-        public string cnf_bigc { get; set; }
+        public trunghang cnf_27lvl { get; set; }
+        public trunghang cnf_121cb { get; set; }
+        public trunghang cnf_171tp { get; set; }
+        public trunghang cnf_181gv { get; set; }
+        public trunghang cnf_25ldh { get; set; }
+        public trunghang cnf_335cg { get; set; }
+        public trunghang cnf_554nvc { get; set; }
+        public trunghang cnf_aeon { get; set; }
+        public trunghang cnf_royal { get; set; }
+        public trunghang cnf_timecity { get; set; }
+        public trunghang cnf_bigc { get; set; }
+        public trunghang cnf_185thd { get; set; }
         
-        public string layten (string ten)
+        public trunghang layten (string ten)
         {
-            string kq = null;
+            trunghang kq = null;
             if (ten == "cnf_27lvl")
             {
                 kq = cnf_27lvl;
@@ -67,7 +68,15 @@ namespace Danhmuc27lvl
             {
                 kq = cnf_bigc;
             }
+            else if (ten == "cnf_185thd")
+            {
+                kq = cnf_185thd;
+            }
             return kq;
         }
+    }
+    class trunghang
+    {
+        public string trangthaitrung { get; set; }
     }
 }
