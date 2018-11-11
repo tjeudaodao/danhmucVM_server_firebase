@@ -148,7 +148,7 @@
             // 
             // lbngayban
             // 
-            this.lbngayban.BackColor = System.Drawing.Color.Gainsboro;
+            this.lbngayban.BackColor = System.Drawing.Color.WhiteSmoke;
             this.lbngayban.Font = new System.Drawing.Font("Comic Sans MS", 22F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbngayban.ForeColor = System.Drawing.Color.Tomato;
             this.lbngayban.Location = new System.Drawing.Point(478, 12);
@@ -160,7 +160,7 @@
             // 
             // lbmotasanpham
             // 
-            this.lbmotasanpham.BackColor = System.Drawing.Color.Gainsboro;
+            this.lbmotasanpham.BackColor = System.Drawing.Color.WhiteSmoke;
             this.lbmotasanpham.Font = new System.Drawing.Font("Comic Sans MS", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbmotasanpham.ForeColor = System.Drawing.Color.DimGray;
             this.lbmotasanpham.Location = new System.Drawing.Point(7, 82);
@@ -172,7 +172,7 @@
             // 
             // lbdatrunghaychua
             // 
-            this.lbdatrunghaychua.BackColor = System.Drawing.Color.Indigo;
+            this.lbdatrunghaychua.BackColor = System.Drawing.Color.BlueViolet;
             this.lbdatrunghaychua.Font = new System.Drawing.Font("Comic Sans MS", 24F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbdatrunghaychua.ForeColor = System.Drawing.SystemColors.Control;
             this.lbdatrunghaychua.Location = new System.Drawing.Point(705, 89);
@@ -184,7 +184,7 @@
             // 
             // lbduocbanhaychua
             // 
-            this.lbduocbanhaychua.BackColor = System.Drawing.Color.RoyalBlue;
+            this.lbduocbanhaychua.BackColor = System.Drawing.Color.SkyBlue;
             this.lbduocbanhaychua.Font = new System.Drawing.Font("Comic Sans MS", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbduocbanhaychua.ForeColor = System.Drawing.SystemColors.Control;
             this.lbduocbanhaychua.Location = new System.Drawing.Point(705, 13);
@@ -230,7 +230,7 @@
             this.datag1.AllowUserToDeleteRows = false;
             this.datag1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.datag1.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCells;
-            this.datag1.BackgroundColor = System.Drawing.Color.WhiteSmoke;
+            this.datag1.BackgroundColor = System.Drawing.Color.White;
             this.datag1.BorderStyle = System.Windows.Forms.BorderStyle.None;
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle3.BackColor = System.Drawing.Color.DimGray;
@@ -399,7 +399,7 @@
             // 
             // lbmahang
             // 
-            this.lbmahang.BackColor = System.Drawing.Color.Gainsboro;
+            this.lbmahang.BackColor = System.Drawing.Color.WhiteSmoke;
             this.lbmahang.Font = new System.Drawing.Font("Comic Sans MS", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbmahang.ForeColor = System.Drawing.Color.Crimson;
             this.lbmahang.Location = new System.Drawing.Point(1006, 186);
@@ -422,7 +422,7 @@
             // 
             // btnchuatrunghang
             // 
-            this.btnchuatrunghang.BackColor = System.Drawing.Color.Gainsboro;
+            this.btnchuatrunghang.BackColor = System.Drawing.Color.WhiteSmoke;
             this.btnchuatrunghang.Font = new System.Drawing.Font("Comic Sans MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnchuatrunghang.ForeColor = System.Drawing.Color.Purple;
             this.btnchuatrunghang.Image = ((System.Drawing.Image)(resources.GetObject("btnchuatrunghang.Image")));
@@ -437,7 +437,7 @@
             // 
             // btndatrunghang
             // 
-            this.btndatrunghang.BackColor = System.Drawing.Color.Gainsboro;
+            this.btndatrunghang.BackColor = System.Drawing.Color.WhiteSmoke;
             this.btndatrunghang.Font = new System.Drawing.Font("Comic Sans MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btndatrunghang.ForeColor = System.Drawing.Color.Navy;
             this.btndatrunghang.Image = ((System.Drawing.Image)(resources.GetObject("btndatrunghang.Image")));

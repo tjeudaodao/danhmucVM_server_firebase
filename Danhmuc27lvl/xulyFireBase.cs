@@ -16,10 +16,7 @@ namespace Danhmuc27lvl
     class xulyFireBase
     {
         public static EventStreamResponse trunghangListener;
-        public static void huyListener()
-        {
-            trunghangListener.Cancel();
-        }
+        
         public static string tencuahang;
         public static string setTenCuaHang
         {
