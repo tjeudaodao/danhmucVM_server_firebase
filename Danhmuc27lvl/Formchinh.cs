@@ -41,6 +41,7 @@ namespace Danhmuc27lvl
         System.Media.SoundPlayer phatchuaduocban = new System.Media.SoundPlayer(Properties.Resources.chuaban);
         private static bool phatAM = true;
         static bool cofiledmmoi = false;
+        public static int id = 1;
 
         public void phatAMTHANH_BAN()
         {
@@ -403,8 +404,10 @@ namespace Danhmuc27lvl
             xulyFireBase.setTenCuaHang = "cnf_27lvl";
 
             loadkhikhoidong();
+            Random rd = new Random();
+            id = rd.Next(1, 5000);
             xulyFireBase.langngheLoadbang(datag1);
-            xulyFireBase.langngheTrungHang(datag1);
+            xulyFireBase.langngheTrungHang(datag1, id);
         }
         void laythongtinvaolabel(string mahang)
         {
@@ -489,7 +492,6 @@ namespace Danhmuc27lvl
             {
 
                 var con = ketnoisqlite.khoitao();
-                con.updateClick("1");
                 var ham = hamtao.Khoitao();
                 if (datag1.SelectedRows.Count > 0)
                 {
@@ -502,6 +504,7 @@ namespace Danhmuc27lvl
                         matong = row.Cells[0].Value.ToString();
                         con.updatedatrunghangthanhdatrung(matong);
                         xulyFireBase.updateTrunghangFB(ngay, matong, "Đã Trưng Bán");
+                        xulyFireBase.updateTrunghangTongFB(ngay, matong, "Đã Trưng Bán", id);
                     }
                     if (ngaychonbandau == null)
                     {
@@ -514,7 +517,6 @@ namespace Danhmuc27lvl
                     else datag1.DataSource = con.laythongtinkhichonngay(ngaychonbandau);
                     nhaydenhangvuachon(sohang);
                     updatesoluongtrenbang();
-                    con.updateClick("0");
                 }
             }
             catch (Exception ex)
@@ -530,8 +532,6 @@ namespace Danhmuc27lvl
             try
             {
                 var con = ketnoisqlite.khoitao();
-
-                con.updateClick("1");
                 if (datag1.SelectedRows.Count > 0)
                 {
                     int sohang = datag1.SelectedRows[0].Index;
@@ -545,6 +545,7 @@ namespace Danhmuc27lvl
                         con.updatetrunghangthanhchuatrung(matong);
 
                         xulyFireBase.updateTrunghangFB(ngay, matong, "Chưa trưng bán");
+                        xulyFireBase.updateTrunghangTongFB(ngay, matong, "Chưa trưng bán", id);
                     }
                     if (ngaychonbandau == null)
                     {
@@ -557,8 +558,6 @@ namespace Danhmuc27lvl
                     else datag1.DataSource = con.laythongtinkhichonngay(ngaychonbandau);
                     nhaydenhangvuachon(sohang);
                     updatesoluongtrenbang();
-
-                    con.updateClick("0");
                 }
             }
             catch (Exception ex)

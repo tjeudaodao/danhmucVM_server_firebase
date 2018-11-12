@@ -43,6 +43,25 @@ namespace Danhmuc27lvl
         {
             public string tenngay { get; set; }
         }
+        class id
+        {
+            public int name { get; set; }
+        }
+        class masp
+        {
+            public string tenma { get; set; }
+            public string trangthai { get; set; }
+        }
+        class ngaychon
+        {
+            public string tenngay { get; set; }
+        }
+        class update
+        {
+            public id id { get; set; }
+            public masp masp { get; set; }
+            public ngaychon ngaychon { get; set; }
+        }
         // cac thao tac voi co so du lieu firebase
         public static async Task<string> layngayGannhat()
         { 
@@ -102,35 +121,56 @@ namespace Danhmuc27lvl
                     }));
                 });
         }
-        public static async void langngheTrungHang(DataGridView dtv)
+        public static async void xulylangngheTrunghang(DataGridView dtv, int idcuamay)
         {
             clientFirebase = new FireSharp.FirebaseClient(configFirebase);
-            trunghangListener = await clientFirebase.OnAsync("ngayduocban",
+            FirebaseResponse layngay = await clientFirebase.GetAsync("updatetrunghang/" + tencuahang);
+            update kq = layngay.ResultAs<update>();
+            int idSV = kq.id.name;
+            if (idcuamay != idSV)
+            {
+                var con = ketnoisqlite.khoitao();
+                con.updatetrunghang(kq.masp.tenma, kq.masp.trangthai);
+                dtv.Invoke(new MethodInvoker(delegate ()
+                {
+                    dtv.DataSource = con.laythongtinkhichonngay(kq.ngaychon.tenngay);
+                }));
+            }
+        }
+        public static async void langngheTrungHang(DataGridView dtv, int id)
+        {
+            clientFirebase = new FireSharp.FirebaseClient(configFirebase);
+            EventStreamResponse trunghangListener = await clientFirebase.OnAsync("updatetrunghang",
                 changed:
                 (sender, args, context) =>
                 {
-
-                    var con = ketnoisqlite.khoitao();
-                    if (con.docClick() == "0")
-                    {
-                        string path = args.Path;
-                        string patt = @"/(\d{8})/(\d{1}\w{2}\d{2}\w\d{3})/";
-                        var match = Regex.Match(path, patt);
-                        string ngaydangso = match.Groups[1].ToString();
-                        string mahang = match.Groups[2].ToString();
-                        con.updatetrunghang(mahang, args.Data);
-                        dtv.Invoke(new MethodInvoker(delegate ()
-                        {
-                            taobang(ngaydangso, dtv);
-                        }));
-                    }
-                    
+                    xulylangngheTrunghang(dtv, id);
                 });
         }
         public static async void updateTrunghangFB(string ngaydangso, string matong, string tentrangthai)
         {
             clientFirebase = new FireSharp.FirebaseClient(configFirebase);
             FirebaseResponse chen = await clientFirebase.UpdateAsync("ngayduocban/" + ngaydangso + "/" + matong + "/taikhoancnf/" + tencuahang , new { trangthaitrung = tentrangthai });
+        }
+        public static async void updateTrunghangTongFB(string ngaydangso, string matong, string tentrangthai, int id)
+        {
+            var data = new update
+            {
+                id = new id
+                {
+                    name = id
+                },
+                masp = new masp
+                {
+                    tenma = matong,
+                    trangthai = tentrangthai
+                },
+                ngaychon = new ngaychon { tenngay = ngaydangso }
+            };
+            clientFirebase = new FireSharp.FirebaseClient(configFirebase);
+            FirebaseResponse chen = await clientFirebase.UpdateAsync("updatetrunghang/" + tencuahang, data);
+
+            Console.WriteLine(matong);
         }
     }
 }
