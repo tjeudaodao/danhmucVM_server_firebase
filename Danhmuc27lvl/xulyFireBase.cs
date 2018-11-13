@@ -104,6 +104,29 @@ namespace Danhmuc27lvl
             }
             dtv.DataSource = dt;
         }
+        public static async void updateTrunghangkhichonngay(string ngaychondangdo, DataGridView dtv)
+        {
+            clientFirebase = new FireSharp.FirebaseClient(configFirebase);
+            try
+            {
+                FirebaseResponse re = await clientFirebase.GetAsync("ngayduocban/" + ngaychondangdo);
+                Dictionary<string, dulieu> kq = re.ResultAs<Dictionary<string, dulieu>>();
+                var con = ketnoisqlite.khoitao();
+                foreach (KeyValuePair<string, dulieu> item in kq)
+                {
+                    con.updatetrunghang(item.Key, item.Value.taikhoancnf.layten(tencuahang).trangthaitrung);
+                }
+                dtv.Invoke(new MethodInvoker(delegate ()
+                {
+                    dtv.DataSource = con.laythongtinkhichonngay(ngaychondangdo);
+                }));
+            }
+            catch (Exception)
+            {
+                return;
+            }
+           
+        }
         public static async void chenFilemoi(string tenfile)
         {
             clientFirebase = new FireSharp.FirebaseClient(configFirebase);

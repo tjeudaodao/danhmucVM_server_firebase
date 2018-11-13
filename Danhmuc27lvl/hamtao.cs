@@ -173,15 +173,15 @@ namespace Danhmuc27lvl
                         try
                         {
                             con.Chenvaobanghangduocban(mahang.Maduocban, mahang.Ngayduocban, mahang.Ghichu, mahang.Ngaydangso, mahang.Motamaban, mahang.Chudemaban);
-
+                            ngay = mahang.Ngaydangso;
+                            capnhatFireBase(mahang.Ngaydangso, mahang.Maduocban, mahang.Motamaban, mahang.Chudemaban, mahang.Ghichu, mahang.Ngayduocban);
                         }
                         catch (Exception)
                         {
 
                             continue;
                         }
-                        ngay = mahang.Ngaydangso;
-                        capnhatFireBase(mahang.Ngaydangso, mahang.Maduocban, mahang.Motamaban, mahang.Chudemaban, mahang.Ghichu, mahang.Ngayduocban);
+                        
                     }
                 }
                 

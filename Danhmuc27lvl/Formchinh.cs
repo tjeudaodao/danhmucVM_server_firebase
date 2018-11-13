@@ -662,7 +662,7 @@ namespace Danhmuc27lvl
                 var month = sender as MonthCalendar;
                 DateTime ngaychon = month.SelectionStart;
                 ngaychonbandau = month.SelectionStart.ToString("yyyyMMdd", CultureInfo.InvariantCulture);
-                datag1.DataSource = con.laythongtinkhichonngay(ngaychonbandau);
+                xulyFireBase.updateTrunghangkhichonngay(ngaychonbandau, datag1);
                 updatesoluongtrenbang();
                 dateTimePicker1.Value = ngaychon;
                 dateTimePicker2.Value = ngaychon;
