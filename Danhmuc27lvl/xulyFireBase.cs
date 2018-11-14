@@ -15,8 +15,7 @@ namespace Danhmuc27lvl
 {
     class xulyFireBase
     {
-        public static EventStreamResponse trunghangListener;
-        
+        public static System.Media.SoundPlayer danhmucmoi = new System.Media.SoundPlayer(Properties.Resources.danhmucmoi);
         public static string tencuahang;
         public static string setTenCuaHang
         {
@@ -104,7 +103,7 @@ namespace Danhmuc27lvl
             }
             dtv.DataSource = dt;
         }
-        public static async void updateTrunghangkhichonngay(string ngaychondangdo, DataGridView dtv)
+        public static async void updateTrunghangkhichonngay(string ngaychondangdo, DataGridView dtv, Label lbtongma)
         {
             clientFirebase = new FireSharp.FirebaseClient(configFirebase);
             try
@@ -119,10 +118,22 @@ namespace Danhmuc27lvl
                 dtv.Invoke(new MethodInvoker(delegate ()
                 {
                     dtv.DataSource = con.laythongtinkhichonngay(ngaychondangdo);
+                    lbtongma.Invoke(new MethodInvoker(delegate ()
+                    {
+                        lbtongma.Text = dtv.Rows.Count.ToString();
+                    }));
                 }));
             }
             catch (Exception)
             {
+                dtv.Invoke(new MethodInvoker(delegate ()
+                {
+                    dtv.DataSource = null;
+                    lbtongma.Invoke(new MethodInvoker(delegate ()
+                    {
+                        lbtongma.Text = "0";
+                    }));
+                }));
                 return;
             }
            
@@ -142,6 +153,7 @@ namespace Danhmuc27lvl
                     {
                         taobang(args.Data, dtv);
                     }));
+                    danhmucmoi.Play();
                 });
         }
         public static async void xulylangngheTrunghang(DataGridView dtv, int idcuamay)
@@ -152,18 +164,16 @@ namespace Danhmuc27lvl
             int idSV = kq.id.name;
             if (idcuamay != idSV)
             {
-                var con = ketnoisqlite.khoitao();
-                con.updatetrunghang(kq.masp.tenma, kq.masp.trangthai);
                 dtv.Invoke(new MethodInvoker(delegate ()
                 {
-                    dtv.DataSource = con.laythongtinkhichonngay(kq.ngaychon.tenngay);
+                    taobang(kq.ngaychon.tenngay, dtv);
                 }));
             }
         }
         public static async void langngheTrungHang(DataGridView dtv, int id)
         {
             clientFirebase = new FireSharp.FirebaseClient(configFirebase);
-            EventStreamResponse trunghangListener = await clientFirebase.OnAsync("updatetrunghang",
+            EventStreamResponse trunghangListener = await clientFirebase.OnAsync("updatetrunghang/" + tencuahang,
                 changed:
                 (sender, args, context) =>
                 {
@@ -192,8 +202,6 @@ namespace Danhmuc27lvl
             };
             clientFirebase = new FireSharp.FirebaseClient(configFirebase);
             FirebaseResponse chen = await clientFirebase.UpdateAsync("updatetrunghang/" + tencuahang, data);
-
-            Console.WriteLine(matong);
         }
     }
 }

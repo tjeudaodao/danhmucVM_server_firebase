@@ -405,7 +405,7 @@ namespace Danhmuc27lvl
 
             loadkhikhoidong();
             Random rd = new Random();
-            id = rd.Next(1, 5000);
+            id = rd.Next(10001, 11000);
             xulyFireBase.langngheLoadbang(datag1);
             xulyFireBase.langngheTrungHang(datag1, id);
         }
@@ -457,7 +457,6 @@ namespace Danhmuc27lvl
             }
             else if (kiemtra == null)
             {
-                pbThemvaoduocban.Enabled = true;
                 lbdatrunghaychua.Text = "Chưa trưng bán";
                 lbduocbanhaychua.Text = "Chưa được bán";
                 phatAMTHANH_KOBAN();
@@ -486,11 +485,10 @@ namespace Danhmuc27lvl
             datag1.FirstDisplayedScrollingRowIndex = sohang;
             datag1.Focus();
         }
-        void updatetrunghangthanhdatrung()
+        void updatetrunghang(string trangthai)
         {
             try
             {
-
                 var con = ketnoisqlite.khoitao();
                 var ham = hamtao.Khoitao();
                 if (datag1.SelectedRows.Count > 0)
@@ -502,9 +500,9 @@ namespace Danhmuc27lvl
                     {
                         ngay = ham.chuyendoingayvedangso(row.Cells[4].Value.ToString());
                         matong = row.Cells[0].Value.ToString();
-                        con.updatedatrunghangthanhdatrung(matong);
-                        xulyFireBase.updateTrunghangFB(ngay, matong, "Đã Trưng Bán");
-                        xulyFireBase.updateTrunghangTongFB(ngay, matong, "Đã Trưng Bán", id);
+                        con.updatetrunghang(matong, trangthai);
+                        xulyFireBase.updateTrunghangFB(ngay, matong, trangthai);
+                        xulyFireBase.updateTrunghangTongFB(ngay, matong, trangthai, id);
                     }
                     if (ngaychonbandau == null)
                     {
@@ -524,49 +522,6 @@ namespace Danhmuc27lvl
                 NotificationHts("Có vấn đề");
                 lbtrangthai.Text = ex.ToString();
             }
-
-
-        }
-        void updatetrunghangthanhchuatrung()
-        {
-            try
-            {
-                var con = ketnoisqlite.khoitao();
-                if (datag1.SelectedRows.Count > 0)
-                {
-                    int sohang = datag1.SelectedRows[0].Index;
-                    var ham = hamtao.Khoitao();
-                    string matong = null;
-                    string ngay = null;
-                    foreach (DataGridViewRow row in datag1.SelectedRows)
-                    {
-                        ngay = ham.chuyendoingayvedangso(row.Cells[4].Value.ToString());
-                        matong = row.Cells[0].Value.ToString();
-                        con.updatetrunghangthanhchuatrung(matong);
-
-                        xulyFireBase.updateTrunghangFB(ngay, matong, "Chưa trưng bán");
-                        xulyFireBase.updateTrunghangTongFB(ngay, matong, "Chưa trưng bán", id);
-                    }
-                    if (ngaychonbandau == null)
-                    {
-                        ngaychonbandau = con.layngayganhat();
-                    }
-                    if (nuthts_trung.Checked)
-                    {
-                        datag1.DataSource = con.laydanhsachCHUATRUNG();
-                    }
-                    else datag1.DataSource = con.laythongtinkhichonngay(ngaychonbandau);
-                    nhaydenhangvuachon(sohang);
-                    updatesoluongtrenbang();
-                }
-            }
-            catch (Exception ex)
-            {
-                NotificationHts("Có vấn đề");
-                lbtrangthai.Text = ex.ToString();
-            }
-
-
         }
         void NotificationHts(string noidung)
         {
@@ -662,8 +617,9 @@ namespace Danhmuc27lvl
                 var month = sender as MonthCalendar;
                 DateTime ngaychon = month.SelectionStart;
                 ngaychonbandau = month.SelectionStart.ToString("yyyyMMdd", CultureInfo.InvariantCulture);
-                xulyFireBase.updateTrunghangkhichonngay(ngaychonbandau, datag1);
-                updatesoluongtrenbang();
+                xulyFireBase.updateTrunghangkhichonngay(ngaychonbandau, datag1, lbtongma);
+
+                lbngayban.Text = DateTime.ParseExact(ngaychonbandau, "yyyyMMdd", CultureInfo.InvariantCulture).ToString("dd-MM-yyyy");
                 dateTimePicker1.Value = ngaychon;
                 dateTimePicker2.Value = ngaychon;
             }
@@ -674,37 +630,13 @@ namespace Danhmuc27lvl
             }
             
         }
-
-        private void pbThemvaoduocban_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                var con = ketnoisqlite.khoitao();
-                if (con.Kiemtra("matong", "hangduocban", lbmahang.Text) == null && lbmahang.Text != "Mã hàng")
-                {
-                    DialogResult hoi = MessageBox.Show("Thêm mã " + lbmahang.Text + " vào danh sách được bán", "Thông báo", MessageBoxButtons.YesNo);
-                    if (hoi == DialogResult.Yes)
-                    {
-                        // update ma hang vao danh sach duoc ban
-                        con.themmamoivaodanhsachduocban(lbmahang.Text);
-                        NotificationHts("Vừa thêm mã " + lbmahang.Text + " vào danh sách được bán");
-                    }
-                }
-                else { MessageBox.Show("Mã đấy đã có trong danh sách được bán"); }
-            }
-            catch (Exception ex)
-            {
-
-                lbtrangthai.Text = ex.ToString();
-            }
-            
-        }
+        
 
         private void btndatrunghang_Click(object sender, EventArgs e)
         {
             try
             {
-                updatetrunghangthanhdatrung();
+                updatetrunghang("Đã Trưng Bán");
             }
             catch (Exception ex)
             {
@@ -719,7 +651,7 @@ namespace Danhmuc27lvl
             try
             {
 
-                updatetrunghangthanhchuatrung();
+                updatetrunghang("Chưa trưng bán");
             }
             catch (Exception ex)
             {

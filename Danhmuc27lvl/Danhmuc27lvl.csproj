@@ -270,6 +270,7 @@
   <ItemGroup>
     <Content Include="pawprint_jFz_icon.ico" />
     <Content Include="paw_print__IOq_icon.ico" />
+    <None Include="Resources\danhmucmoi.wav" />
     <None Include="Resources\speaker %281%29.png" />
     <None Include="Resources\speaker %283%29.png" />
     <None Include="Resources\chuaban.wav" />
