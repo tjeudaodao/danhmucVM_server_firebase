@@ -203,5 +203,32 @@ namespace Danhmuc27lvl
             clientFirebase = new FireSharp.FirebaseClient(configFirebase);
             FirebaseResponse chen = await clientFirebase.UpdateAsync("updatetrunghang/" + tencuahang, data);
         }
+        public static async void updateSqlite(DataGridView dtv, Label lbtongma)
+        {
+            clientFirebase = new FireSharp.FirebaseClient(configFirebase);
+            FirebaseResponse layngay = await clientFirebase.GetAsync("ngayduocban");
+            Dictionary<string, Dictionary<string, dulieu>> kq = layngay.ResultAs<Dictionary<string, Dictionary<string, dulieu>>>();
+            var con = ketnoisqlite.khoitao();
+            string ngaysqlite = null;
+            foreach (KeyValuePair<string, Dictionary<string, dulieu>> ngay in kq)
+            {
+                ngaysqlite = con.Kiemtra("ngaydangso", "hangduocban", ngay.Key);
+                if (ngaysqlite == null)
+                {
+                    foreach (KeyValuePair<string, dulieu> ma in ngay.Value)
+                    {
+                        con.Chenvaobanghangduocban(ma.Key, ma.Value.ngayduocban, ma.Value.ghichu, ngay.Key, ma.Value.mota, ma.Value.chude);
+                    }
+                    dtv.Invoke(new MethodInvoker(delegate ()
+                    {
+                        dtv.DataSource = con.laythongtinkhichonngay(ngay.Key);
+                    }));
+                    lbtongma.Invoke(new MethodInvoker(delegate ()
+                    {
+                        lbtongma.Text = dtv.Rows.Count.ToString();
+                    }));
+                }
+            }
+        }
     }
 }

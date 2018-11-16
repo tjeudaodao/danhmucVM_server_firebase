@@ -108,7 +108,7 @@ namespace Danhmuc27lvl
         {
             // attachment extensions to save
             string[] extensionsArray = {  ".xls" };
-            string mau = "(^Danh muc treo ban hang)|(^KH tung hang)|(^DM treo ban)|(^Ke hoach tung hang)";
+            string mau = "(^danh muc treo ban hang)|(^kh tung hang)|(^dm treo ban)|(^ke hoach tung hang)";
             var fi = folder.Items;
             if (fi != null)
             {
@@ -128,19 +128,20 @@ namespace Danhmuc27lvl
 
                                     for (int i = 1; i <= mi.Attachments.Count; i++)
                                     {
-                                        var fn = mi.Attachments[i].FileName.ToLower();
+                                        string tenfile = mi.Attachments[i].FileName;
+                                        var fn = tenfile.ToLower();
                                         if (extensionsArray.Any(fn.Contains))
                                         {
-                                            if (Regex.IsMatch(mi.Attachments[i].FileName, mau))
+                                            if (Regex.IsMatch(fn, mau))
                                             {
                                                 if (!Directory.Exists(duongdangoc + @"\filedanhmuc\"))
                                                 {
                                                     Directory.CreateDirectory(duongdangoc + @"\filedanhmuc\");
                                                 }
-                                                if (!File.Exists(duongdangoc + @"\filedanhmuc\" + mi.Attachments[i].FileName))
+                                                if (!File.Exists(duongdangoc + @"\filedanhmuc\" + tenfile))
                                                 {
-                                                    mi.Attachments[i].SaveAsFile(duongdangoc + @"\filedanhmuc\" + mi.Attachments[i].FileName);
-                                                    _luufilemoi.Add(mi.Attachments[i].FileName);
+                                                    mi.Attachments[i].SaveAsFile(duongdangoc + @"\filedanhmuc\" + tenfile);
+                                                    _luufilemoi.Add(tenfile);
                                                 }
                                                 else
                                                 {
@@ -157,7 +158,6 @@ namespace Danhmuc27lvl
                 }
                 catch (Exception e)
                 {
-                    ghiloi.WriteLogError(e);
                     return;
                 }
             }

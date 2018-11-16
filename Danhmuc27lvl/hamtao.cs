@@ -158,13 +158,17 @@ namespace Danhmuc27lvl
             string ngaymoinhat = con.layngayganhat();
             FirebaseResponse thongso = await clientFirebase.UpdateAsync("thongso/ngaymoinhat", new { tenngay = ngaymoinhat });
         }
-        public void xulymahang()
+        public async void xulymahang()
         {
             var con = ketnoisqlite.khoitao();
-            clientFirebase = new FireSharp.FirebaseClient(configFirebase);
             
             try
             {
+                clientFirebase = new FireSharp.FirebaseClient(configFirebase);
+                FirebaseResponse layngay = await clientFirebase.GetAsync("ngayduocban");
+                Dictionary<string, Dictionary<string, dulieu>> kq = layngay.ResultAs<Dictionary<string, Dictionary<string, dulieu>>>();
+                bool kk = false;
+
                 string ngay = null;
                 if (luuthongtin != null)
                 {
@@ -172,9 +176,17 @@ namespace Danhmuc27lvl
                     {
                         try
                         {
-                            con.Chenvaobanghangduocban(mahang.Maduocban, mahang.Ngayduocban, mahang.Ghichu, mahang.Ngaydangso, mahang.Motamaban, mahang.Chudemaban);
-                            ngay = mahang.Ngaydangso;
-                            capnhatFireBase(mahang.Ngaydangso, mahang.Maduocban, mahang.Motamaban, mahang.Chudemaban, mahang.Ghichu, mahang.Ngayduocban);
+                            
+                            foreach (KeyValuePair<string, Dictionary<string, dulieu>> ngaysv in kq)
+                            {
+                                if(mahang.Ngaydangso == ngaysv.Key) { kk = true; }
+                            }
+                            if (!kk)
+                            {
+                                con.Chenvaobanghangduocban(mahang.Maduocban, mahang.Ngayduocban, mahang.Ghichu, mahang.Ngaydangso, mahang.Motamaban, mahang.Chudemaban);
+                                ngay = mahang.Ngaydangso;
+                                capnhatFireBase(mahang.Ngaydangso, mahang.Maduocban, mahang.Motamaban, mahang.Chudemaban, mahang.Ghichu, mahang.Ngayduocban);
+                            }
                         }
                         catch (Exception)
                         {

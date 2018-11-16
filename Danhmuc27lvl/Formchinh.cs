@@ -300,10 +300,10 @@ namespace Danhmuc27lvl
             {
                 pbtrangthaicapnhat.Image = Properties.Resources.ok;
             }));
-                lbtongma.Invoke(new MethodInvoker(delegate ()
-                {
-                    lbtongma.Text = datag1.Rows.Count.ToString();
-                }));
+            datag1.Invoke(new MethodInvoker(delegate ()
+            {
+                xulyFireBase.updateSqlite(datag1, lbtongma);
+            }));
             if (cofiledmmoi)
             {
                 this.Invoke(new Action(delegate ()
