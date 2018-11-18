@@ -128,13 +128,14 @@ namespace Danhmuc27lvl
 
                                     for (int i = 1; i <= mi.Attachments.Count; i++)
                                     {
+                                        ghiloi.ghimadocoutlook(mi.Attachments[i].FileName);
                                         string tenfile = mi.Attachments[i].FileName;
                                         var fn = tenfile.ToLower();
                                         if (extensionsArray.Any(fn.Contains))
                                         {
                                             if (Regex.IsMatch(fn, mau))
                                             {
-                                                ghiloi.ghimadocoutlook(fn);
+                                                
                                                 if (!Directory.Exists(duongdangoc + @"\filedanhmuc\"))
                                                 {
                                                     Directory.CreateDirectory(duongdangoc + @"\filedanhmuc\");
