@@ -40,5 +40,20 @@ namespace Danhmuc27lvl
                 // ignored
             }
         }
+        public static void ghimadocoutlook(string message)
+        {
+            StreamWriter sw = null;
+            try
+            {
+                sw = new StreamWriter(AppDomain.CurrentDomain.BaseDirectory + "\\maoutlook.txt", true);
+                sw.WriteLine(DateTime.Now.ToString("g") + ": " + message);
+                sw.Flush();
+                sw.Close();
+            }
+            catch
+            {
+                // ignored
+            }
+        }
     }
 }

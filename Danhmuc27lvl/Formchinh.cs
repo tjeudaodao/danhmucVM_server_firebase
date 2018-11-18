@@ -173,6 +173,10 @@ namespace Danhmuc27lvl
         {
             try
             {
+                if (File.Exists("maoutlook.txt"))
+                {
+                    File.Delete("maoutlook.txt");
+                }
                 var xulymail = layfileoutlook.Instance();
                 thongtinmailmoi = xulymail.loadmailmoi();
                 
@@ -300,10 +304,10 @@ namespace Danhmuc27lvl
             {
                 pbtrangthaicapnhat.Image = Properties.Resources.ok;
             }));
-            datag1.Invoke(new MethodInvoker(delegate ()
-            {
-                xulyFireBase.updateSqlite(datag1, lbtongma);
-            }));
+            //datag1.Invoke(new MethodInvoker(delegate ()
+            //{
+            //    xulyFireBase.updateSqlite(datag1, lbtongma);
+            //}));
             if (cofiledmmoi)
             {
                 this.Invoke(new Action(delegate ()

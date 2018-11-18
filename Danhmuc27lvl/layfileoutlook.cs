@@ -134,6 +134,7 @@ namespace Danhmuc27lvl
                                         {
                                             if (Regex.IsMatch(fn, mau))
                                             {
+                                                ghiloi.ghimadocoutlook(fn);
                                                 if (!Directory.Exists(duongdangoc + @"\filedanhmuc\"))
                                                 {
                                                     Directory.CreateDirectory(duongdangoc + @"\filedanhmuc\");
@@ -151,12 +152,14 @@ namespace Danhmuc27lvl
                                         }
 
                                     }
+                                    
                                 }
                             }
                         }
                     }
+                    ghiloi.ghimadocoutlook("\n");
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     return;
                 }
