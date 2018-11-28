@@ -27,12 +27,17 @@ namespace Danhmuc27lvl
     class hamtao
     {
         public static IFirebaseClient clientFirebase;
+        public static IFirebaseClient clientFB_2;
         public static IFirebaseConfig configFirebase = new FirebaseConfig
         {
             AuthSecret = "w2evy6pLiTOlWdsl3ZJ40eJ1qvCkCrFGUecs2kou",
             BasePath = "https://danhmucvm-cnf.firebaseio.com/"
         };
-
+        public static IFirebaseConfig configFB_2 = new FirebaseConfig
+        {
+            AuthSecret = "1lEekdSoEPyYj2jL0ACiLSpUfI0jlvFzC2u8AA4C",
+            BasePath = "https://danhmucvm-cnf-database.firebaseio.com"
+        };
         #region khoitao class
         public hamtao()
         {
@@ -150,12 +155,13 @@ namespace Danhmuc27lvl
                     cnf_185thd = new trunghang { trangthaitrung = " " }
                 }
             };
-            SetResponse ketnoi = await clientFirebase.SetAsync("ngayduocban/" + ngaydangso + "/" + matong, dulieuh);
+            SetResponse ketnoi = await clientFB_2.SetAsync("ngayduocban/" + ngaydangso + "/" + matong, dulieuh);
         }
         public async void capnhatngaymoinhatFB ()
         {
             var con = ketnoisqlite.khoitao();
             string ngaymoinhat = con.layngayganhat();
+            clientFirebase = new FireSharp.FirebaseClient(configFirebase);
             FirebaseResponse thongso = await clientFirebase.UpdateAsync("thongso/ngaymoinhat", new { tenngay = ngaymoinhat });
         }
         public async void xulymahang()
@@ -164,8 +170,8 @@ namespace Danhmuc27lvl
             
             try
             {
-                clientFirebase = new FireSharp.FirebaseClient(configFirebase);
-                FirebaseResponse layngay = await clientFirebase.GetAsync("ngayduocban");
+                clientFB_2 = new FireSharp.FirebaseClient(configFB_2);
+                FirebaseResponse layngay = await clientFB_2.GetAsync("ngayduocban");
                 Dictionary<string, Dictionary<string, dulieu>> kq = layngay.ResultAs<Dictionary<string, Dictionary<string, dulieu>>>();
                 bool kk = false;
 
@@ -176,10 +182,10 @@ namespace Danhmuc27lvl
                     {
                         try
                         {
-                            
+
                             foreach (KeyValuePair<string, Dictionary<string, dulieu>> ngaysv in kq)
                             {
-                                if(mahang.Ngaydangso == ngaysv.Key) { kk = true; }
+                                if (mahang.Ngaydangso == ngaysv.Key) { kk = true; }
                             }
                             if (!kk)
                             {

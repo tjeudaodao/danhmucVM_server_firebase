@@ -410,7 +410,7 @@ namespace Danhmuc27lvl
             loadkhikhoidong();
             Random rd = new Random();
             id = rd.Next(10001, 11000);
-            xulyFireBase.langngheLoadbang(datag1);
+            //xulyFireBase.langngheLoadbang(datag1);
             xulyFireBase.langngheTrungHang(datag1, id);
         }
         void laythongtinvaolabel(string mahang)

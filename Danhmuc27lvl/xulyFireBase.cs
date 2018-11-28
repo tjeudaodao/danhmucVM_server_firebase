@@ -23,10 +23,16 @@ namespace Danhmuc27lvl
             set { tencuahang = value; }
         }
         public static IFirebaseClient clientFirebase;
+        public static IFirebaseClient clientFB_2;
         public static IFirebaseConfig configFirebase = new FirebaseConfig
         {
             AuthSecret = "w2evy6pLiTOlWdsl3ZJ40eJ1qvCkCrFGUecs2kou",
             BasePath = "https://danhmucvm-cnf.firebaseio.com/"
+        };
+        public static IFirebaseConfig configFB_2 = new FirebaseConfig
+        {
+            AuthSecret = "1lEekdSoEPyYj2jL0ACiLSpUfI0jlvFzC2u8AA4C",
+            BasePath = "https://danhmucvm-cnf-database.firebaseio.com"
         };
         class thongso
         {
@@ -71,7 +77,7 @@ namespace Danhmuc27lvl
         }
         public static async void taobang(string ngaychon,DataGridView dtv)
         {
-            clientFirebase = new FireSharp.FirebaseClient(configFirebase);
+            clientFB_2 = new FireSharp.FirebaseClient(configFB_2);
             DataTable dt = new DataTable();
             dt.Columns.Add("Mã tổng");
             dt.Columns.Add("Mô tả");
@@ -82,7 +88,7 @@ namespace Danhmuc27lvl
             dt.AcceptChanges();
             try
             {
-                FirebaseResponse laytheongay = await clientFirebase.GetAsync("ngayduocban/" + ngaychon);
+                FirebaseResponse laytheongay = await clientFB_2.GetAsync("ngayduocban/" + ngaychon);
                 Dictionary<string, dulieu> kq = laytheongay.ResultAs<Dictionary<string, dulieu>>();
                 foreach (KeyValuePair<string, dulieu> item in kq)
                 {
@@ -105,10 +111,10 @@ namespace Danhmuc27lvl
         }
         public static async void updateTrunghangkhichonngay(string ngaychondangdo, DataGridView dtv, Label lbtongma)
         {
-            clientFirebase = new FireSharp.FirebaseClient(configFirebase);
+            clientFB_2 = new FireSharp.FirebaseClient(configFB_2);
             try
             {
-                FirebaseResponse re = await clientFirebase.GetAsync("ngayduocban/" + ngaychondangdo);
+                FirebaseResponse re = await clientFB_2.GetAsync("ngayduocban/" + ngaychondangdo);
                 Dictionary<string, dulieu> kq = re.ResultAs<Dictionary<string, dulieu>>();
                 var con = ketnoisqlite.khoitao();
                 foreach (KeyValuePair<string, dulieu> item in kq)
@@ -143,19 +149,19 @@ namespace Danhmuc27lvl
             clientFirebase = new FireSharp.FirebaseClient(configFirebase);
             FirebaseResponse chen = await clientFirebase.UpdateAsync("thongso/filemoi", new { tenfile = tenfile});
         }
-        public static async void langngheLoadbang(DataGridView dtv)
-        {
-            clientFirebase = new FireSharp.FirebaseClient(configFirebase);
-            EventStreamResponse response = await clientFirebase.OnAsync("thongso/ngaymoinhat",
-                changed:
-                (sender, args, context) => {
-                    dtv.Invoke(new MethodInvoker(delegate ()
-                    {
-                        taobang(args.Data, dtv);
-                    }));
-                    danhmucmoi.Play();
-                });
-        }
+        //public static async void langngheLoadbang(DataGridView dtv)
+        //{
+        //    clientFirebase = new FireSharp.FirebaseClient(configFirebase);
+        //    EventStreamResponse response = await clientFirebase.OnAsync("thongso/ngaymoinhat",
+        //        changed:
+        //        (sender, args, context) => {
+        //            dtv.Invoke(new MethodInvoker(delegate ()
+        //            {
+        //                taobang(args.Data, dtv);
+        //            }));
+        //            danhmucmoi.Play();
+        //        });
+        //}
         public static async void xulylangngheTrunghang(DataGridView dtv, int idcuamay)
         {
             clientFirebase = new FireSharp.FirebaseClient(configFirebase);
@@ -182,8 +188,8 @@ namespace Danhmuc27lvl
         }
         public static async void updateTrunghangFB(string ngaydangso, string matong, string tentrangthai)
         {
-            clientFirebase = new FireSharp.FirebaseClient(configFirebase);
-            FirebaseResponse chen = await clientFirebase.UpdateAsync("ngayduocban/" + ngaydangso + "/" + matong + "/taikhoancnf/" + tencuahang , new { trangthaitrung = tentrangthai });
+            clientFB_2 = new FireSharp.FirebaseClient(configFB_2);
+            FirebaseResponse chen = await clientFB_2.UpdateAsync("ngayduocban/" + ngaydangso + "/" + matong + "/taikhoancnf/" + tencuahang , new { trangthaitrung = tentrangthai });
         }
         public static async void updateTrunghangTongFB(string ngaydangso, string matong, string tentrangthai, int id)
         {
@@ -205,8 +211,8 @@ namespace Danhmuc27lvl
         }
         public static async void updateSqlite(DataGridView dtv, Label lbtongma)
         {
-            clientFirebase = new FireSharp.FirebaseClient(configFirebase);
-            FirebaseResponse layngay = await clientFirebase.GetAsync("ngayduocban");
+            clientFB_2 = new FireSharp.FirebaseClient(configFB_2);
+            FirebaseResponse layngay = await clientFB_2.GetAsync("ngayduocban");
             Dictionary<string, Dictionary<string, dulieu>> kq = layngay.ResultAs<Dictionary<string, Dictionary<string, dulieu>>>();
             var con = ketnoisqlite.khoitao();
             string ngaysqlite = null;
