@@ -174,7 +174,16 @@ namespace Danhmuc27lvl
                 FirebaseResponse layngay = await clientFB_2.GetAsync("ngayduocban");
                 Dictionary<string, Dictionary<string, dulieu>> kq = layngay.ResultAs<Dictionary<string, Dictionary<string, dulieu>>>();
                 bool kk = false;
-
+                var sort = from ngayht in kq orderby ngayht.Key ascending select ngayht;
+                foreach ( var item in sort)
+                {
+                    if (kq.Count > 20)
+                    {
+                        FirebaseResponse xoangay = await clientFB_2.DeleteAsync("ngayduocban/" + item.Key);
+                        ghiloi.WriteLogError("Xoa ngay tren firebase: " + item.Key);
+                        kq.Remove(item.Key);
+                    }
+                }
                 string ngay = null;
                 if (luuthongtin != null)
                 {
